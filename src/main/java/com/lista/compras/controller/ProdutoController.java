@@ -26,8 +26,8 @@ public class ProdutoController {
         return ResponseEntity.ok().body(listProdutos);
     }
     @PostMapping
-    public ResponseEntity<Produto> save(@RequestBody Produto produto) {
-        var produtoSalvo = produtoService.cadastraProduto(produto);
+    public ResponseEntity<ProdutoResponseDTO> save(@RequestBody Produto produto) {
+        ProdutoResponseDTO produtoSalvo = produtoService.cadastraProduto(produto);
         return ResponseEntity.status(HttpStatus.CREATED).body(produtoSalvo);
     }
 }

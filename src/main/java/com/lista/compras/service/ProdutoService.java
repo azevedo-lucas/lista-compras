@@ -19,7 +19,8 @@ public class ProdutoService {
         this.produtoRepository = produtoRepository;
     }
 
-    public Produto cadastraProduto(Produto produto) {
+    public ProdutoResponseDTO cadastraProduto(Produto produto) {
+
         if (produto.getNome() == null || produto.getNome().isBlank()) {
 
             throw new IllegalArgumentException("O campo é obrigatório e deve ser preenchido.");
@@ -33,8 +34,8 @@ public class ProdutoService {
 
             throw new IllegalArgumentException("O preço é obrigatório e deve ser maior que zero.");
         }
-
-        return produtoRepository.save(produto);
+        Produto produtoSalvo = produtoRepository.save(produto);
+        return converterParaDTO(produtoSalvo);
     }
 
     public List<ProdutoResponseDTO> listaProdutos() {
