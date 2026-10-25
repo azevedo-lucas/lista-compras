@@ -1,5 +1,6 @@
 package com.lista.compras.controller;
 
+import com.lista.compras.dto.ProdutoResponseDTO;
 import com.lista.compras.model.Produto;
 import com.lista.compras.service.ProdutoService;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Produto>> findAll() {
+    public ResponseEntity<List<ProdutoResponseDTO>> findAll() {
         var listProdutos = produtoService.listaProdutos();
         return ResponseEntity.ok().body(listProdutos);
     }
