@@ -1,5 +1,6 @@
 package com.lista.compras.service;
 
+import com.lista.compras.dto.ProdutoResponseDTO;
 import com.lista.compras.model.Produto;
 import com.lista.compras.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ public class ProdutoService {
     }
 
     public Produto cadastraProduto(Produto produto) {
-
         if (produto.getNome() == null || produto.getNome().isBlank()) {
 
             throw new IllegalArgumentException("O campo é obrigatório e deve ser preenchido.");
@@ -37,9 +37,21 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
-    public List<Produto> listaProdutos() {
-        return produtoRepository.findAll();
+    public List<ProdutoResponseDTO> listaProdutos() {
+        return produtoRepository.findAll()
+                .stream()
+                .map(this::converterParaDTO)
+                .toList();
     }
-
+    public ProdutoResponseDTO converterParaDTO(Produto produto) {
+        BigDecimal subtotal = produto.calcularSubtotal();
+        return new ProdutoResponseDTO(
+                produto.getId(),
+                produto.getNome(),
+                produto.getQuantidade(),
+                produto.getPrecoUnitario(),
+                subtotal
+        );
+    }
 
 }
