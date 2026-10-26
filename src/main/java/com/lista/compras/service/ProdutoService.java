@@ -61,5 +61,12 @@ public class ProdutoService {
                 subtotal
         );
     }
+    
+    public List<ProdutoResponseDTO> buscarPorNome(String nome) {
+        return produtoRepository.findByNomeContainingIgnoreCase(nome)
+                .stream()
+                .map(this::converterParaDTO)
+                .toList();
+    }
 
 }
