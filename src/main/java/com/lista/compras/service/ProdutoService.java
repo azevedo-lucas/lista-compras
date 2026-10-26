@@ -44,6 +44,13 @@ public class ProdutoService {
                 .map(this::converterParaDTO)
                 .toList();
     }
+    public BigDecimal calcularTotal(){
+        return listaProdutos()
+                .stream()
+                .map(ProdutoResponseDTO::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     public ProdutoResponseDTO converterParaDTO(Produto produto) {
         BigDecimal subtotal = produto.calcularSubtotal();
         return new ProdutoResponseDTO(
