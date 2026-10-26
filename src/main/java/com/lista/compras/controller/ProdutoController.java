@@ -36,4 +36,10 @@ public class ProdutoController {
         var listarProdutoTotal = produtoService.calcularTotal();
         return ResponseEntity.ok().body(listarProdutoTotal);
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ProdutoResponseDTO>> findByNomeContainingIgnoreCase(@RequestParam String nome) {
+        var buscarPorNome = produtoService.buscarPorNome(nome);
+        return ResponseEntity.ok().body(buscarPorNome);
+    }
 }
