@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -29,5 +30,10 @@ public class ProdutoController {
     public ResponseEntity<ProdutoResponseDTO> save(@RequestBody Produto produto) {
         ProdutoResponseDTO produtoSalvo = produtoService.cadastraProduto(produto);
         return ResponseEntity.status(HttpStatus.CREATED).body(produtoSalvo);
+    }
+    @GetMapping("/total")
+    public ResponseEntity<BigDecimal> getTotal() {
+        var listarProdutoTotal = produtoService.calcularTotal();
+        return ResponseEntity.ok().body(listarProdutoTotal);
     }
 }
