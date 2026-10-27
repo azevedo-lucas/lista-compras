@@ -4,10 +4,14 @@ import com.lista.compras.dto.ProdutoResponseDTO;
 import com.lista.compras.model.Produto;
 import com.lista.compras.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProdutoService {
@@ -44,11 +48,34 @@ public class ProdutoService {
                 .map(this::converterParaDTO)
                 .toList();
     }
-    public BigDecimal calcularTotal(){
+    public BigDecimal calcularTotal() {
         return listaProdutos()
                 .stream()
                 .map(ProdutoResponseDTO::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public ProdutoResponseDTO produtoAtualizado(String nomeAtual, Produto produto) {
+        List<Produto> produtosEncontrados = produtoRepository.findByNomeIgnoreCase(nomeAtual);
+        if (produtosEncontrados.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
+        }
+        Produto produtoExistente = produtosEncontrados.get(0);
+        List<Produto> produtosComNovoNome = produtoRepository.findByNomeIgnoreCase(produto.getNome());
+
+        boolean nomeJaExiste = produtosComNovoNome.stream().
+                anyMatch(p -> !p.getId().equals(produtoExistente.getId()));
+        if (nomeJaExiste) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um produto com esse nome");
+        }
+
+        produtoExistente.setNome(produto.getNome());
+        produtoExistente.setQuantidade(produto.getQuantidade());
+        produtoExistente.setPrecoUnitario(produto.getPrecoUnitario());
+
+        Produto produtoSalvo = produtoRepository.save(produtoExistente);
+        return converterParaDTO(produtoSalvo);
+
     }
 
     public ProdutoResponseDTO converterParaDTO(Produto produto) {
@@ -61,7 +88,7 @@ public class ProdutoService {
                 subtotal
         );
     }
-    
+
     public List<ProdutoResponseDTO> buscarPorNome(String nome) {
         return produtoRepository.findByNomeContainingIgnoreCase(nome)
                 .stream()
